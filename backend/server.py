@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,10 +7,19 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
+import asyncio
 
+# Import our GitHub service
+from github_service import (
+    GitHubService, 
+    RepositoryIntegrator, 
+    GitHubRepository, 
+    IntegrationJob,
+    get_github_service
+)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -19,8 +29,12 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Collections
+repositories_collection = db.repositories
+jobs_collection = db.integration_jobs
+
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(title="GitHub Repository Integration System")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
