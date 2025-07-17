@@ -98,6 +98,11 @@ async def get_repository(repo_id: str):
     repo = await repositories_collection.find_one({"id": repo_id})
     if not repo:
         raise HTTPException(status_code=404, detail="Repository not found")
+    
+    # Convert MongoDB ObjectId to string and remove it from response
+    if "_id" in repo:
+        del repo["_id"]
+    
     return repo
 
 @api_router.post("/repositories/select")
