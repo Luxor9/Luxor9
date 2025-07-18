@@ -1,0 +1,51 @@
+version: "3.9"
+
+x-stream-guard: &stream-guard
+  entrypoint: ["/bin/sh","-c","if [ \"$${STREAM_ENABLED}\" = '1' ]; then exec /start.sh; else echo 'Stream disabled'; sleep infinity; fi"]
+
+services:
+  guides-producer:
+    image: ghcr.io/luxoranova9/stream-guides:dev
+    environment:
+      STREAM_ENABLED: ${STREAM_GUIDES}
+      STREAM_ID: guides
+      PRIMARY_LANG: ${PRIMARY_LANG}
+    ports:
+      - "8101:8080"
+    <<: *stream-guard
+
+  templates-producer:
+    image: ghcr.io/luxoranova9/stream-templates:dev
+    environment:
+      STREAM_ENABLED: ${STREAM_TEMPLATES}
+      STREAM_ID: templates
+    ports:
+      - "8102:8080"
+    <<: *stream-guard
+
+  affiliate-cluster:
+    image: ghcr.io/luxoranova9/stream-affiliate:dev
+    environment:
+      STREAM_ENABLED: ${STREAM_AFFILIATE}
+      STREAM_ID: affiliate
+    ports:
+      - "8103:8080"
+    <<: *stream-guard
+
+  microcourse-drip:
+    image: ghcr.io/luxoranova9/stream-microcourse:dev
+    environment:
+      STREAM_ENABLED: ${STREAM_MICROCOURSE}
+      STREAM_ID: microcourse
+    ports:
+      - "8104:8080"
+    <<: *stream-guard
+
+  promptpack-service:
+    image: ghcr.io/luxoranova9/stream-promptpack:dev
+    environment:
+      STREAM_ENABLED: ${STREAM_PROMPTPACK}
+      STREAM_ID: promptpack
+    ports:
+      - "8105:8080"
+    <<: *stream-guard
