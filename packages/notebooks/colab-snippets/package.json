@@ -1,0 +1,39 @@
+{
+  "name": "@luxoranova9/colab-snippets",
+  "version": "1.0.0",
+  "description": "Collection of Google Colab snippets and notebook utilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src/**/*.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "jupyter",
+    "colab",
+    "notebooks",
+    "python",
+    "snippets"
+  ],
+  "author": "LUXORANOVA9",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "@types/node": "^18.0.0",
+    "jest": "^29.0.0",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "*.ipynb"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LUXORANOVA9/Luxor9.git",
+    "directory": "packages/notebooks/colab-snippets"
+  }
+}
