@@ -19,7 +19,19 @@
     "dev": "npm run dev --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
     "install:all": "npm install && npm run build",
-    "bootstrap": "npm run install:all && npm run build"
+    "bootstrap": "npm run install:all && npm run build",
+    "deploy": "./scripts/deployment/deploy.sh",
+    "deploy:saas": "./scripts/deployment/deploy.sh saas",
+    "deploy:ai": "./scripts/deployment/deploy.sh ai",
+    "deploy:tools": "./scripts/deployment/deploy.sh tools",
+    "deploy:frameworks": "./scripts/deployment/deploy.sh frameworks",
+    "deploy:staging": "./scripts/deployment/deploy.sh --env staging all",
+    "deploy:production": "./scripts/deployment/deploy.sh --env production all",
+    "health-check": "./scripts/deployment/health-check.sh",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up",
+    "docker:build": "docker build -t luxoranova9/monorepo .",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.0.0",

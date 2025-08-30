@@ -1,0 +1,58 @@
+[build]
+  publish = "packages/saas/*/dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_ENV = "production"
+  NODE_VERSION = "18"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[plugins]]
+  package = "netlify-plugin-cache"
+  
+  [plugins.inputs]
+  paths = ["node_modules", ".next/cache"]
+
+[context.production]
+  command = "npm run build --workspace packages/saas/*"
+  
+  [context.production.environment]
+  NODE_ENV = "production"
+
+[context.deploy-preview]
+  command = "npm run build --workspace packages/saas/*"
+  
+  [context.deploy-preview.environment]
+  NODE_ENV = "staging"
+
+[context.branch-deploy]
+  command = "npm run build --workspace packages/saas/*"
+
+[[headers]]
+  for = "/api/*"
+  
+  [headers.values]
+  Access-Control-Allow-Origin = "*"
+  Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+  Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+[[headers]]
+  for = "/*"
+  
+  [headers.values]
+  X-Frame-Options = "DENY"
+  X-XSS-Protection = "1; mode=block"
+  X-Content-Type-Options = "nosniff"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/docs/*"
+  to = "https://luxoranova9-docs.netlify.app/:splat"
+  status = 200
+  force = true
+
+[[functions]]
+  pattern = "packages/saas/*/api/**/*.js"
+  node_bundler = "esbuild"

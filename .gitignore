@@ -178,7 +178,6 @@ Cargo.lock
 
 # Docker
 .dockerignore
-Dockerfile
 
 # Terraform
 *.tfstate
@@ -189,3 +188,28 @@ Dockerfile
 # Kubernetes
 *.yaml.bak
 *.yml.bak
+
+# Deployment artifacts
+deployment-logs/
+.deployment/
+.deploy/
+
+# Platform-specific
+.vercel
+.netlify
+.firebase
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+ssl/
+
+# Monitoring and logs
+monitoring/
+prometheus/
+grafana/
+
+# Backup files
+*.backup
+*.bak

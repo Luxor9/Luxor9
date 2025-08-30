@@ -83,6 +83,39 @@ jobs:
           packages/*/.next/
         retention-days: 30
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker images
+      run: |
+        # Build base image
+        docker buildx build \
+          --target saas-production \
+          --tag ghcr.io/${{ github.repository }}/saas:latest \
+          --tag ghcr.io/${{ github.repository }}/saas:${{ github.sha }} \
+          --push .
+
+        # Build AI services image  
+        docker buildx build \
+          --target ai-production \
+          --tag ghcr.io/${{ github.repository }}/ai:latest \
+          --tag ghcr.io/${{ github.repository }}/ai:${{ github.sha }} \
+          --push .
+
+        # Build tools image
+        docker buildx build \
+          --target tools-production \
+          --tag ghcr.io/${{ github.repository }}/tools:latest \
+          --tag ghcr.io/${{ github.repository }}/tools:${{ github.sha }} \
+          --push .
+
   package-publish:
     needs: build-and-deploy
     runs-on: ubuntu-latest

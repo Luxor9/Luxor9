@@ -20,6 +20,25 @@
     },
     "clean": {
       "cache": false
+    },
+    "deploy": {
+      "dependsOn": ["build", "test", "lint"],
+      "cache": false
+    },
+    "deploy:staging": {
+      "dependsOn": ["build", "test", "lint"],
+      "cache": false
+    },
+    "deploy:production": {
+      "dependsOn": ["build", "test", "lint"],
+      "cache": false
+    },
+    "docker:build": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "health-check": {
+      "cache": false
     }
   }
 }

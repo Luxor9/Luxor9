@@ -1,0 +1,98 @@
+name: Deploy AI Services
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'AI service to deploy'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - neura-ai-saas-factory
+        - luxoranova-brain
+        - jupyter-ai
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+jobs:
+  deploy-ai-services:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    
+    strategy:
+      matrix:
+        service: ${{ github.event.inputs.service == 'all' && fromJson('["neura-ai-saas-factory", "luxoranova-brain", "jupyter-ai"]') || fromJson(format('["{0}"]', github.event.inputs.service)) }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        if [ -f packages/ai/${{ matrix.service }}/requirements.txt ]; then
+          pip install -r packages/ai/${{ matrix.service }}/requirements.txt
+        fi
+
+    - name: Build AI service
+      run: npm run build --workspace packages/ai/${{ matrix.service }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push AI service image
+      run: |
+        docker buildx build \
+          --target ai-production \
+          --tag ghcr.io/${{ github.repository }}/ai-${{ matrix.service }}:latest \
+          --tag ghcr.io/${{ github.repository }}/ai-${{ matrix.service }}:${{ github.sha }} \
+          --push .
+
+    - name: Deploy to staging
+      if: ${{ github.event.inputs.environment == 'staging' || github.event.inputs.environment == '' }}
+      run: |
+        echo "Deploying AI service ${{ matrix.service }} to staging"
+        # Add deployment commands here
+
+    - name: Deploy to production
+      if: ${{ github.event.inputs.environment == 'production' }}
+      run: |
+        echo "Deploying AI service ${{ matrix.service }} to production"
+        # Add production deployment commands here
+
+    - name: Health check
+      run: |
+        echo "Performing health check for ${{ matrix.service }}"
+        # Add health check commands here
