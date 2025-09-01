@@ -189,3 +189,6 @@ Dockerfile
 # Kubernetes
 *.yaml.bak
 *.yml.bak
+
+# Jupyter releaser temporary files
+.jupyter_releaser_checkout/
