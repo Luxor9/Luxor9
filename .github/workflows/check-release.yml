@@ -1,0 +1,50 @@
+name: Check Release
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check_release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build packages
+      run: npm run build
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install jupyter-releaser
+      run: pip install jupyter-releaser
+
+    - name: Check npm packages
+      run: |
+        # Create minimal jupyter-releaser config for npm-only repo
+        echo "options:" > .jupyter-releaser.yaml
+        echo "  hooks:" >> .jupyter-releaser.yaml
+        echo "    before-check-npm: npm run build" >> .jupyter-releaser.yaml
+        echo "  npm: true" >> .jupyter-releaser.yaml
+        echo "  python: false" >> .jupyter-releaser.yaml
+        
+        # Set required git config for jupyter-releaser
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        
+        # Run check-npm with prep-git first as required
+        jupyter-releaser prep-git --ref ${{ github.sha }}
+        jupyter-releaser check-npm

@@ -1,0 +1,21 @@
+options:
+  # Configure for npm-only monorepo (no Python packages)
+  python: false
+  npm: true
+  
+  # Skip Python-related steps
+  skip:
+    - check-python
+    - build-python
+    - publish-python
+  
+  hooks:
+    before-check-npm: |
+      npm ci
+      npm run build
+      
+  # Configure for monorepo structure
+  npm-workspace: true
+  
+  # Version configuration
+  version-spec: "package.json"
