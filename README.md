@@ -114,7 +114,7 @@ This monorepo uses several tools for efficient management:
 
 - **Workspaces**: npm workspaces for dependency management
 - **Turbo**: Build system and task orchestration
-- **Lerna**: Package versioning and publishing
+- **Changesets**: Package versioning and publishing
 - **ESLint**: Code linting across all packages
 - **Prettier**: Code formatting
 - **Husky**: Git hooks for quality assurance

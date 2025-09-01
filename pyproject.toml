@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "luxoranova9-monorepo"
+version = "1.0.0"
+description = "LUXORANOVA9 Unified Monorepo - AI, SaaS, and Development Tools"
+authors = [
+    {name = "LUXORANOVA9"}
+]
+license = {text = "Apache-2.0"}
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Luxor9/Luxor9"
+Repository = "https://github.com/Luxor9/Luxor9"
+
+[tool.jupyter-releaser]
+# Configure for npm packages
+skip = ["check-python", "build-python", "publish-python"]
+
+[tool.jupyter-releaser.hooks.check-npm]
+# Custom configuration for npm package checks
