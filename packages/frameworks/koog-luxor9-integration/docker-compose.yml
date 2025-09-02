@@ -1,0 +1,173 @@
+version: '3.8'
+
+services:
+  # Koog Agent Service
+  koog-agent:
+    build: .
+    container_name: luxor9-koog-agent
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/luxor9_koog
+      - VECTOR_DIMENSIONS=1536
+      - OBSERVABILITY_ENABLED=true
+      - LOG_LEVEL=info
+      - LLM_ROUTING_STRATEGY=hybrid
+      - MTLS_ENABLED=false
+      - INPUT_SANITIZATION=true
+      - TENANT_ISOLATION=true
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - luxor9-network
+
+  # Redis Cache Service
+  redis:
+    image: redis:7.2-alpine
+    container_name: luxor9-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --replica-read-only no
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - luxor9-network
+
+  # PostgreSQL with Vector Extension
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: luxor9-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=luxor9_koog
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d luxor9_koog"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - luxor9-network
+
+  # MinIO Object Storage (Optional)
+  minio:
+    image: minio/minio:latest
+    container_name: luxor9-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - luxor9-network
+
+  # Jaeger Tracing (Optional)
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: luxor9-jaeger
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14269:14269"
+      - "9411:9411"
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: unless-stopped
+    networks:
+      - luxor9-network
+
+  # Prometheus Metrics (Optional)
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: luxor9-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - luxor9-network
+
+  # Grafana Dashboard (Optional)
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: luxor9-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    restart: unless-stopped
+    networks:
+      - luxor9-network
+
+# Networks
+networks:
+  luxor9-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
