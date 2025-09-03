@@ -171,6 +171,18 @@ export class Luxor9AgentBus extends EventEmitter implements LuxorAgentBus {
     if (!task.policy || !task.policy.llm_ranking || task.policy.llm_ranking.length === 0) {
       throw new Error('Task must have valid LLM policy');
     }
+    // Validate timeout_ms is reasonable
+    const MAX_TIMEOUT_MS = 60000; // 1 minute
+    if (task.policy.timeout_ms !== undefined) {
+      if (
+        typeof task.policy.timeout_ms !== 'number' ||
+        !Number.isFinite(task.policy.timeout_ms) ||
+        task.policy.timeout_ms < 0 ||
+        task.policy.timeout_ms > MAX_TIMEOUT_MS
+      ) {
+        throw new Error(`timeout_ms must be between 0 and ${MAX_TIMEOUT_MS}ms`);
+      }
+    }
   }
 
   private async executeTaskWithTimeout(
