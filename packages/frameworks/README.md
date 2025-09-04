@@ -42,3 +42,24 @@ cd packages/frameworks/luxoranova-engine
 npm install
 npm run dev
 ```
+
+## 🏗️ Framework Development Guidelines
+
+1. **Modularity**: Design frameworks to be modular and extensible
+2. **Documentation**: Provide comprehensive API documentation
+3. **Examples**: Include usage examples and tutorials
+4. **Testing**: Implement thorough testing suites
+5. **Versioning**: Follow semantic versioning principles
+6. **Compatibility**: Maintain backward compatibility when possible
+
+## 📋 Migration Status
+
+The following legacy framework components are candidates for migration to this directory:
+
+- `SystemPromptsGPL/` → packages/frameworks/system-prompts/
+- `SystemPromptsGPL_Remixed/` → packages/frameworks/system-prompts-remixed/
+- `lib/` → packages/frameworks/lib/
+- `pkgs/` → packages/frameworks/packages/
+- `tcl/` → packages/frameworks/tcl/
+
+See [MIGRATION.md](../../MIGRATION.md) for detailed migration guidance.

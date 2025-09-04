@@ -33,3 +33,15 @@ npm run dev
 5. **Monitoring**: Include logging and monitoring capabilities
 6. **Scalability**: Design for horizontal scaling from the start
 7. **Security**: Implement proper security measures and data protection
+
+## 📋 Migration Status
+
+The following legacy SaaS components are candidates for migration to this directory:
+
+- `apps/` → packages/saas/apps/
+- `backend/` → packages/saas/backend/
+- `Full Web App Stack with Agentic Workflows and Monetization/` → packages/saas/agentic-web-stack/
+- `jeecg-boot/` → packages/saas/jeecg-boot/
+- `luxora/` → packages/saas/luxora/
+
+See [MIGRATION.md](../../MIGRATION.md) for detailed migration guidance.
