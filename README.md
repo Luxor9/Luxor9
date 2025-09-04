@@ -186,21 +186,29 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 📊 Package Status
 
-| Category | Packages | Status |
-|----------|----------|---------|
-| AI | 13 | 🏗️ Setting up |
-| SaaS | 7 | 🏗️ Setting up |
-| Tools | 11 | 🏗️ Setting up |
-| Frameworks | 6 | 🏗️ Setting up |
-| Notebooks | 2 | ✅ Migrated |
-| Demos | 4 | 🏗️ Setting up |
-| Infrastructure | 4 | 🏗️ Setting up |
+| Category | Packages | Status | Migration Ready |
+|----------|----------|---------|----------------|
+| AI | 13 | 🏗️ Setting up | ✅ Ready |
+| SaaS | 7 | 🏗️ Setting up | ✅ Ready |
+| Tools | 11 | 🏗️ Setting up | ✅ Ready |
+| Frameworks | 6 | 🏗️ Setting up | ✅ Ready |
+| Notebooks | 2 | ✅ Migrated | ✅ Ready |
+| Demos | 4 | 🏗️ Setting up | ✅ Ready |
+| Infrastructure | 4 | 🏗️ Setting up | ✅ Ready |
 
 ## 🚀 What's Next?
 
-1. Migrate existing repositories to their respective package directories
+1. **Migrate existing repositories** to their respective package directories (see [MIGRATION.md](./MIGRATION.md))
 2. Set up shared configuration and utilities
 3. Implement consistent testing frameworks
 4. Add CI/CD pipelines for each package category
 5. Create comprehensive documentation for each package
 6. Establish deployment pipelines
+
+### 📋 Legacy Migration
+
+A comprehensive migration plan is available for transitioning legacy project directories to the new monorepo structure:
+
+- **[MIGRATION.md](./MIGRATION.md)**: Complete migration mapping and guidance
+- **[scripts/migrate-legacy.sh](./scripts/migrate-legacy.sh)**: Automated migration script
+- Package-specific README files contain migration status for their domains

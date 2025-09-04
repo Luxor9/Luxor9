@@ -38,3 +38,18 @@ npm run dev
 4. **Testing**: Include both unit tests and integration tests with mock responses
 5. **Documentation**: Document model architectures and training procedures
 6. **Security**: Never commit API keys or sensitive model data
+
+## 📋 Migration Status
+
+The following legacy AI components are candidates for migration to this directory:
+
+- `agents/` → packages/ai/agents/
+- `doraemonai/` → packages/ai/doraemon-ai/
+- `LUXORANOVA BRAIN/` → packages/ai/luxoranova-brain/
+- `models/` → packages/ai/models/
+- `PraisonAI-2.2.51/` → packages/ai/praison-ai/
+- `log_intel/` → packages/ai/log-intelligence/
+- `D A N C A N/` → packages/ai/dancan/
+- `Fairies/` → packages/ai/fairies/
+
+See [MIGRATION.md](../../MIGRATION.md) for detailed migration guidance.
